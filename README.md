@@ -1,8 +1,8 @@
 # Smearoo
 
-Pick a paint bucket, tap the sheet to plop paint, and drag through colors to mix them. Fast swipes make splatters. Set the painting aside for ten seconds to watch the camera tour it.
+Tap a paint bucket, then tap the sheet to plop paint. You can also drag straight from a bucket onto the paper. Each finger keeps its own paint as it moves, and strokes mix where they overlap. Fast swipes make splatters. Set the painting aside for ten seconds to watch the camera tour it.
 
-Open the studio menu with the three dots or **Esc**. The speaker toggles sound, and **F1** opens Starhermit options.
+Hold the three dots or press **Esc** to open the studio menu. **F1** opens Starhermit options, including volume controls.
 
 ## Run and build
 

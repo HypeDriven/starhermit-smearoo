@@ -1,0 +1,12 @@
+# viewport 390x844@1
+# touch-first
+# gesture-policy
+# expect-sounds 3
+
+ready
+expect Smearoo
+save real-key-KeyA
+frames 140
+pinch 235 360 150 150 2
+frames 120
+save two-finger-tap

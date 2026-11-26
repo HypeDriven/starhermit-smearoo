@@ -18,6 +18,10 @@ const context = paper.getContext("2d");
 const pixelTile = new ImageData(tile, tile);
 const sound = {};
 const contacts = new Map();
+const dips = new Map();
+const fingers = new Set();
+const mouse = -1;
+const menuHoldSeconds = 0.65;
 const box = (x, y, width, height) => ({ x, y, width, height });
 const hit = (r, x, y) => x >= r.x && x < r.x + r.width && y >= r.y && y < r.y + r.height;
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -27,11 +31,13 @@ const now = () => frame().time;
 
 let wasm, pixels, cursor, grain, layout, music;
 let loaded = 0, total = 1, failed = false, ready = false;
-let selected = 0, marked = false, paintChanged = false, panel = "", muted = false;
+let selected = 0, marked = false, paintChanged = false, panel = "";
+let menuHold = null;
 let swap = -10, rapid = false, lastSquish = -10, lastTouch = -10, lastFlick = -10;
 let focus = true;
 let pointerX = -1, pointerY = -1;
 let cursorOnPaper = false;
+let showingGallery = false;
 let touchX = -1, touchY = -1;
 const audioPaths = {
   dip: "sfx/dip.wav", plop: "sfx/plop.wav", smear: "sfx/smear.wav",
@@ -40,10 +46,10 @@ const audioPaths = {
 };
 
 function audio(event, gain, pitch = 1, pan = 0) {
-  if (!muted && sound[event]) play(sound[event], { gain, pitch, pan });
+  if (sound[event]) play(sound[event], { gain, pitch, pan });
 }
 function startMusic() {
-  if (!music && !muted && sound.music) music = play(sound.music, { gain: 0.26, loop: true, bus: "music" });
+  if (!music && sound.music) music = play(sound.music, { gain: 0.26, loop: true, bus: "music" });
 }
 
 onStart(() => {
@@ -93,30 +99,22 @@ function getLayout(w, h, insets, key) {
   const u = unit;
   const margin = 22 * u;
   const left = insets.left + margin;
-  const top = insets.top + 78 * u;
+  const top = insets.top + 52 * u;
   const bottom = h - insets.bottom;
-  const compact = usableWidth < usableHeight * 1.1;
-  const trayWidth = (compact ? 68 : 155) * u;
+  const trayWidth = 68 * u;
   const roomWidth = usableWidth - margin * 2 - trayWidth - 18 * u;
-  const roomHeight = bottom - top - 46 * u;
-  const trayHeight = Math.min(roomHeight, (compact ? 465 : 294) * u);
+  const roomHeight = bottom - top - 18 * u;
+  const trayHeight = Math.min(roomHeight, 465 * u);
   const tray = box(left, top + (roomHeight - trayHeight) / 2, trayWidth, trayHeight);
   const canvasX = left + trayWidth + 18 * u;
   const surface = box(canvasX, top, roomWidth, roomHeight);
-  const buckets = [];
-  const rowCount = compact ? 6 : 3;
-  const colCount = compact ? 1 : 2;
-  for (let i = 0; i < colors.length; i++) {
-    const bw = trayWidth / colCount;
-    const bh = (trayHeight - 16 * u) / rowCount;
-    buckets.push(box(tray.x + (i % colCount) * bw, tray.y + 8 * u + Math.floor(i / colCount) * bh, bw, bh));
-  }
-  const buttonSize = (compact ? 56 : 46) * u;
-  const menu = box(w - insets.right - margin - buttonSize, insets.top + 17 * u, buttonSize, buttonSize);
-  const audioButton = box(menu.x - buttonSize - 9 * u, menu.y, buttonSize, buttonSize);
+  const bucketHeight = (trayHeight - 16 * u) / colors.length;
+  const buckets = colors.map((_, index) => box(tray.x, tray.y + 8 * u + index * bucketHeight,
+    trayWidth, bucketHeight));
+  const menu = box(w - insets.right - margin - 46 * u, insets.top + 3 * u, 46 * u, 44 * u);
   const gallery = box(insets.left + margin * 1.3, insets.top + 63 * u,
     usableWidth - 2.6 * margin, usableHeight - 99 * u);
-  return { key, w, h, u, left, bottom, insets, margin, surface, gallery, tray, buckets, menu, audioButton };
+  return { key, w, h, u, left, insets, margin, surface, gallery, tray, buckets, menu };
 }
 
 function paintPoint(x, y) {
@@ -128,6 +126,8 @@ function paintPoint(x, y) {
 function cancelContacts() {
   for (const stroke of contacts.values()) wasm.end(stroke.slot);
   contacts.clear();
+  dips.clear();
+  menuHold = null;
 }
 
 function changePanel(value) {
@@ -174,10 +174,9 @@ function panelLayout() {
 
 function press(id, x, y) {
   if (!ready || !layout) return;
-  const showing = wasm.show_time(1) > 0;
   wasm.activity();
   startMusic();
-  if (showing) {
+  if (showingGallery) {
     // The visible painting has moved during the showcase. Wake it without leaving a stray mark.
     return;
   }
@@ -186,11 +185,8 @@ function press(id, x, y) {
     if (button) button.action();
     return;
   }
-  if (hit(layout.menu, x, y)) { changePanel("menu"); return; }
-  if (hit(layout.audioButton, x, y)) {
-    muted = !muted;
-    if (music) music.fade(muted ? 0 : 0.26, 0.18);
-    if (!muted) { startMusic(); audio("menu", 0.35); }
+  if (hit(layout.menu, x, y)) {
+    if (!menuHold) menuHold = { id, since: now() };
     return;
   }
   const paletteIndex = layout.buckets.findIndex((r) => hit(r, x, y));
@@ -201,29 +197,42 @@ function press(id, x, y) {
       swap = time;
     }
     selected = paletteIndex;
+    dips.set(id, paletteIndex);
     audio("dip", 0.56, 0.86 + paletteIndex * 0.075, -0.45);
     return;
   }
-  if (!hit(layout.surface, x, y) || contacts.size >= 10) return;
+  if (hit(layout.surface, x, y)) beginStroke(id, x, y, selected);
+}
+
+function beginStroke(id, x, y, color) {
+  if (contacts.has(id) || contacts.size >= 10) return;
+  const time = now();
   const usedSlots = Array.from(contacts.values()).map((stroke) => stroke.slot);
   let slot = 0;
   while (usedSlots.includes(slot)) slot++;
   const [px, py] = paintPoint(x, y);
   const splash = rapid && time - swap < 0.68;
   rapid = false;
-  contacts.set(id, { slot, time, x: px, y: py });
+  contacts.set(id, { slot, color, time, x: px, y: py });
   const aspect = Math.sqrt(width * layout.surface.height / (height * layout.surface.width));
-  wasm.begin(slot, px, py, selected, splash, aspect);
+  wasm.begin(slot, px, py, color, splash, aspect);
   marked = paintChanged = true;
-  audio("plop", 0.69, 0.85 + selected * 0.067, px / width - 0.5);
+  audio("plop", 0.69, 0.85 + color * 0.067, px / width - 0.5);
   if (splash) audio("flick", 0.53, 1.07, px / width - 0.5);
 }
 
 function move(id, x, y) {
   if (!ready || !layout) return;
   wasm.activity();
+  if (menuHold?.id === id && !hit(layout.menu, x, y)) menuHold = null;
   const stroke = contacts.get(id);
-  if (!stroke) return;
+  if (!stroke) {
+    if (dips.has(id) && hit(layout.surface, x, y)) {
+      beginStroke(id, x, y, dips.get(id));
+      if (contacts.has(id)) dips.delete(id);
+    }
+    return;
+  }
   const [px, py] = paintPoint(x, y);
   if (Math.hypot(px - stroke.x, py - stroke.y) < 1.5) return;
   const time = now();
@@ -233,52 +242,69 @@ function move(id, x, y) {
   stroke.y = py;
   stroke.time = time;
   if (splatter && time - lastFlick > 0.11) {
-    audio("flick", 0.43, 0.98 + selected * 0.04, px / width - 0.5);
+    audio("flick", 0.43, 0.98 + stroke.color * 0.04, px / width - 0.5);
     lastFlick = time;
   } else if (time - lastSquish > 0.16) {
-    audio("smear", 0.28, 0.92 + selected * 0.052, px / width - 0.5);
+    audio("smear", 0.28, 0.92 + stroke.color * 0.052, px / width - 0.5);
     lastSquish = time;
   }
 }
 
 function release(id) {
   if (!ready) return;
+  if (menuHold?.id === id) menuHold = null;
   const stroke = contacts.get(id);
   if (stroke) wasm.end(stroke.slot);
   contacts.delete(id);
+  dips.delete(id);
   wasm.activity();
 }
 
-onTouch(({ id, phase, x, y, control }) => {
+onTouch(({ id, phase, x, y, primary, control }) => {
   if (control) return;
-  lastTouch = now();
-  touchX = x;
-  touchY = y;
-  if (phase === "start") press(id, x, y);
-  else if (phase === "move") move(id, x, y);
-  else {
+  if (primary) {
+    lastTouch = now();
+    touchX = x;
+    touchY = y;
+  }
+  if (phase === "start") {
+    fingers.add(id);
+    press(id, x, y);
+  } else if (phase === "move") {
+    move(id, x, y);
+  } else {
     if (phase === "end" && contacts.has(id)) move(id, x, y);
     release(id);
+    fingers.delete(id);
   }
 });
+
+// A platform may also deliver the first finger through its mouse stream.
+// Keep secondary contacts from overwriting the point used to match that echo.
 function fromTouch(x, y) {
-  return now() - lastTouch < 0.65 && Math.hypot(x - touchX, y - touchY) < 9 * frame().scale;
+  return fingers.size > 0 ||
+    (now() - lastTouch < 0.65 && Math.hypot(x - touchX, y - touchY) < 9 * frame().scale);
 }
 onPointerButton(({ button, pressed, x, y }) => {
-  if (button !== 0 || fromTouch(x, y)) return;
-  if (pressed) press(-1, x, y);
+  if (button !== 0) return;
+  if (fromTouch(x, y)) {
+    if (!pressed && (contacts.has(mouse) || dips.has(mouse) || menuHold?.id === mouse)) release(mouse);
+    return;
+  }
+  if (pressed) press(mouse, x, y);
   else {
-    if (contacts.has(-1)) move(-1, x, y);
-    release(-1);
+    if (contacts.has(mouse)) move(mouse, x, y);
+    release(mouse);
   }
 });
 onPointerMove((x, y) => {
   pointerX = x;
   pointerY = y;
-  if (!fromTouch(x, y)) move(-1, x, y);
+  if (!fromTouch(x, y)) move(mouse, x, y);
 });
 onFocus((focused) => {
   focus = focused;
+  fingers.clear();
   if (ready) { cancelContacts(); wasm.activity(); }
 });
 onAction(({ action, pressed }) => {
@@ -288,7 +314,16 @@ onAction(({ action, pressed }) => {
 });
 
 onFixedUpdate((step) => {
-  if (ready && focus && !panel && !frame().overlayOpen && wasm.tick(step)) audio("gallery", 0.48);
+  if (!ready || !focus || panel) return;
+  if (frame().overlayOpen) {
+    if (menuHold) menuHold = null;
+    return;
+  }
+  if (menuHold) {
+    if (now() - menuHold.since >= menuHoldSeconds) changePanel("menu");
+    return;
+  }
+  if (wasm.tick(step)) audio("gallery", 0.48);
 });
 
 function round(r, radius, color) {
@@ -311,24 +346,21 @@ function brand(x, y, u) {
   draw.text("Smearoo", x + 39 * u, y - 3 * u, { size: 36 * u, weight: 900, color: ink });
 }
 
-function chrome(r, type) {
-  const u = layout.u;
-  const x = r.x + r.width * 0.5;
-  const y = r.y + r.height * 0.5;
-  round(box(r.x, r.y + 3 * u, r.width, r.height), 13 * u, "#d7c5ea");
-  round(r, 13 * u, "#fff9ff");
-  if (type === "menu") {
-    for (let offset = -1; offset <= 1; offset++) draw.circle(x + offset * 7 * u, y, 2 * u, ink);
-  } else {
-    draw.path("M0 7H4L11 1V19L4 13H0Z", x - 12 * u, y - 10 * u, { scale: u, fill: ink });
-    if (muted) {
-      draw.line(x + 3 * u, y - 4 * u, x + 10 * u, y + 4 * u, ink, 2 * u);
-      draw.line(x + 10 * u, y - 4 * u, x + 3 * u, y + 4 * u, ink, 2 * u);
-    } else {
-      draw.strokeArc(x - 3 * u, y, 8 * u, -0.64, 0.64, ink, 1.7 * u);
-      draw.strokeArc(x - 3 * u, y, 13 * u, -0.61, 0.61, ink, 1.7 * u);
-    }
-  }
+function drawMenuButton(area, u) {
+  const x = area.x + area.width / 2;
+  const y = area.y + area.height / 2;
+  const size = 30 * u;
+  const radius = 9 * u;
+  round(box(x - size / 2, y - size / 2 + 2 * u, size, size), radius, "#d7c5ea");
+  round(box(x - size / 2, y - size / 2, size, size), radius, "#fff9ff");
+  for (let offset = -1; offset <= 1; offset++) draw.circle(x + offset * 5 * u, y, 1.5 * u, ink);
+}
+
+function drawMenuHold(area, u) {
+  const progress = Math.min(1, (now() - menuHold.since) / menuHoldSeconds);
+  if (progress <= 0) return;
+  draw.strokeArc(area.x + area.width / 2, area.y + area.height / 2, 17 * u,
+    -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * progress, "#8852d4", 2 * u);
 }
 
 function bucket(r, index) {
@@ -353,18 +385,15 @@ function bucket(r, index) {
 }
 
 function studio() {
-  const { w, h, u, left, bottom, insets, menu, audioButton, tray, buckets } = layout;
+  const { w, h, u, left, insets, menu, tray, buckets } = layout;
   draw.rect(0, 0, w, h, "#eee3fb");
   draw.ellipse(w * 0.23, h * 0.96, w * 0.46, h * 0.27, "#f4ddf3");
   draw.ellipse(w * 0.86, h * 0.10, w * 0.31, h * 0.38, "#f5eafb");
-  brand(left, insets.top + 19 * u, u);
-  chrome(audioButton, "sound");
-  chrome(menu, "menu");
+  brand(left, insets.top + 17 * u, u * 0.5);
+  drawMenuButton(menu, u);
   round(box(tray.x, tray.y + 5 * u, tray.width, tray.height), 21 * u, "#ddabc7");
   round(tray, 21 * u, "#f9ccdf");
   buckets.forEach(bucket);
-  label(t("hint"), layout.surface.x + layout.surface.width / 2, bottom - 34 * u, 16 * u,
-    "#58456e", "center", layout.surface.width);
 }
 
 function painting(area, amount, seconds) {
@@ -429,6 +458,7 @@ onRender((alpha) => {
   }
 
   const seconds = wasm.show_time(alpha);
+  showingGallery = seconds > 0;
   const amount = smooth(seconds / 1.8);
   const onPaper = !panel && seconds <= 0 && hit(surface, pointerX, pointerY);
   if (onPaper !== cursorOnPaper) {
@@ -437,7 +467,7 @@ onRender((alpha) => {
   }
   flushPaint();
   if (amount < 1) {
-    draw.retain("studio", `${key}:${selected}:${muted}:${strings.locale}`, studio);
+    draw.retain("studio", `${key}:${selected}`, studio);
   }
   if (amount > 0) {
     draw.rect(0, 0, w, h, [0.19, 0.13, 0.27, amount]);
@@ -449,5 +479,6 @@ onRender((alpha) => {
   } else {
     painting(surface, 0, 0);
   }
+  if (menuHold) drawMenuHold(layout.menu, u);
   if (panel) modal();
 });

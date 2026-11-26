@@ -1,32 +1,33 @@
 ready
-expect Pick a color, then tap or drag.
+expect Smearoo
 save studio
 tap 40% 45%
 drag 40% 45% 62% 56% 12
-tap 11% 35%
+tap 5% 35%
 drag 62% 45% 40% 56% 5
 touch 47% 38%
 swipe 46% 61% 68% 72% 12
 save painting
 frames 560
-expect Pick a color, then tap or drag.
+expect Smearoo
 until 210 Look what you made!
 frames 80
 save gallery
 touch 50% 50%
-expect Pick a color, then tap or drag.
+expect Smearoo
 key Escape 1
 until 30 Studio menu
 click New paper
 until 30 Start with a fresh sheet?
 click Keep this one
-expect Pick a color, then tap or drag.
+expect Smearoo
 key Escape 1
 click New paper
 click New paper
 save cleared
-expect Pick a color, then tap or drag.
-key Escape 1
+expect Smearoo
+drag 96% 4% 96% 4% 48
+until 30 Studio menu
 click Engine options
 frames 45
 save options

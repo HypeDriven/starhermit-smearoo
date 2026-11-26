@@ -4,7 +4,7 @@
 # profile
 
 ready
-until 30 Pick a color, then tap or drag.
+until 30 Smearoo
 touch 43 290
 measure start
 swipe 105 140 354 744 8
