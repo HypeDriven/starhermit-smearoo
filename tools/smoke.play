@@ -26,7 +26,7 @@ click New paper
 click New paper
 save cleared
 expect Smearoo
-drag 96% 4% 96% 4% 48
+drag 96% 2% 96% 2% 48
 until 30 Studio menu
 click Engine options
 frames 45

@@ -18,7 +18,7 @@
     "sfx/paper.wav": {"sha256": "25c668a04868224e1c406e27bd9de82b17f0fb225268932590b6e846cc058f3a", "size": 29804},
     "sfx/plop.wav": {"sha256": "c81d1f69b6841bc4c97935b61c5580087ee14a4169f70fd89fcef2765b6604f5", "size": 21164},
     "sfx/smear.wav": {"sha256": "d8e0833989b4ea1e7a23c4a9ace97201fb213c9fb44d5ec0e259c203c2caeb8c", "size": 15404},
-    "src/main.js": {"sha256": "19d98ddc93c98a70e9f6cdfeeac1abfb5ca384c8700e429243371f40daba6a3e", "size": 17756},
+    "src/main.js": {"sha256": "a878ba577a73a6029da14bb144bc8ce559f37c408d8edc840fbd47bc4c41921b", "size": 17791},
     "src/words.js": {"sha256": "dcfe13330976ae3449f69ae504d48b0f4f8feebbcd48bb583ac53e1c04768f35", "size": 5587},
     "starhermit.txt": {"sha256": "5cabd5026709cd375dfa7da248957ecef366d2b161012bfae9314c30ba6bf58f", "size": 349}
   },

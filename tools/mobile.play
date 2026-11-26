@@ -14,10 +14,10 @@ until 720 Look what you made!
 touch 220 360
 expect Smearoo
 save before-options-tap
-touch 350 20
+touch 350 10
 frames 48
 save after-options-tap
-swipe 350 20 350 20 48
+swipe 350 10 350 10 48
 until 30 Studio menu
 touch Keep painting
 expect Smearoo

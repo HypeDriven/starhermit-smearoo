@@ -99,7 +99,8 @@ function getLayout(w, h, insets, key) {
   const u = unit;
   const margin = 22 * u;
   const left = insets.left + margin;
-  const top = insets.top + 52 * u;
+  const headerHeight = 26 * u;
+  const top = insets.top + headerHeight;
   const bottom = h - insets.bottom;
   const trayWidth = 68 * u;
   const roomWidth = usableWidth - margin * 2 - trayWidth - 18 * u;
@@ -111,7 +112,7 @@ function getLayout(w, h, insets, key) {
   const bucketHeight = (trayHeight - 16 * u) / colors.length;
   const buckets = colors.map((_, index) => box(tray.x, tray.y + 8 * u + index * bucketHeight,
     trayWidth, bucketHeight));
-  const menu = box(w - insets.right - margin - 46 * u, insets.top + 3 * u, 46 * u, 44 * u);
+  const menu = box(w - insets.right - margin - 46 * u, insets.top, 46 * u, headerHeight);
   const gallery = box(insets.left + margin * 1.3, insets.top + 63 * u,
     usableWidth - 2.6 * margin, usableHeight - 99 * u);
   return { key, w, h, u, left, insets, margin, surface, gallery, tray, buckets, menu };
@@ -349,17 +350,17 @@ function brand(x, y, u) {
 function drawMenuButton(area, u) {
   const x = area.x + area.width / 2;
   const y = area.y + area.height / 2;
-  const size = 30 * u;
-  const radius = 9 * u;
+  const size = 20 * u;
+  const radius = 6 * u;
   round(box(x - size / 2, y - size / 2 + 2 * u, size, size), radius, "#d7c5ea");
   round(box(x - size / 2, y - size / 2, size, size), radius, "#fff9ff");
-  for (let offset = -1; offset <= 1; offset++) draw.circle(x + offset * 5 * u, y, 1.5 * u, ink);
+  for (let offset = -1; offset <= 1; offset++) draw.circle(x + offset * 4 * u, y, 1.25 * u, ink);
 }
 
 function drawMenuHold(area, u) {
   const progress = Math.min(1, (now() - menuHold.since) / menuHoldSeconds);
   if (progress <= 0) return;
-  draw.strokeArc(area.x + area.width / 2, area.y + area.height / 2, 17 * u,
+  draw.strokeArc(area.x + area.width / 2, area.y + area.height / 2, 11 * u,
     -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * progress, "#8852d4", 2 * u);
 }
 
@@ -389,7 +390,7 @@ function studio() {
   draw.rect(0, 0, w, h, "#eee3fb");
   draw.ellipse(w * 0.23, h * 0.96, w * 0.46, h * 0.27, "#f4ddf3");
   draw.ellipse(w * 0.86, h * 0.10, w * 0.31, h * 0.38, "#f5eafb");
-  brand(left, insets.top + 17 * u, u * 0.5);
+  brand(left, insets.top + 4 * u, u * 0.5);
   drawMenuButton(menu, u);
   round(box(tray.x, tray.y + 5 * u, tray.width, tray.height), 21 * u, "#ddabc7");
   round(tray, 21 * u, "#f9ccdf");
