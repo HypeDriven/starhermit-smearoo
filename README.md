@@ -6,7 +6,7 @@ Hold the three dots or press **Esc** to open the studio menu. **F1** opens Starh
 
 ## Run and build
 
-Use Starhermit **1.50.0**. From the project folder:
+Use Starhermit **1.48.0**, the engine bundled in the Starhermit Android app. From the project folder:
 
 ```sh
 starhermit .
