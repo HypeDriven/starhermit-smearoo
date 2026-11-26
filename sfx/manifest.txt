@@ -1,0 +1,8 @@
+# MOSS-SoundEffect v2 clips, trimmed and leveled for Smearoo
+dip | sfx/dip.wav | Upturned paint-cup pop when a bucket is selected
+plop | sfx/plop.wav | Round wet plop when paint lands on the paper
+smear | sfx/smear.wav | Soft squish while paint is dragged
+flick | sfx/flick.wav | Quick spray on a fast stroke or a rapid color change
+gallery | sfx/gallery.wav | Gentle chime as the camera starts its art tour
+paper | sfx/paper.wav | Light paper rustle when a new sheet is picked
+menu | sfx/menu.wav | Soft tick when opening or closing a menu

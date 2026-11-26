@@ -1,0 +1,8 @@
+# gesture-policy
+# expect-sounds 3
+ready
+save real-key-KeyA
+frames 140
+tap 5% 50%
+tap 49% 42%
+frames 120

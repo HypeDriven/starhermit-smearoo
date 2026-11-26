@@ -1,0 +1,17 @@
+# viewport 390x844@1
+ready
+expect Pick a color, then tap or drag.
+save mobile-studio
+touch 49 335
+touch 160 310
+swipe 160 310 300 480 10
+touch 49 475
+swipe 280 315 150 508 6
+save mobile-painting
+until 720 Look what you made!
+touch 220 360
+expect Pick a color, then tap or drag.
+touch 350 35
+until 30 Studio menu
+touch Keep painting
+expect Pick a color, then tap or drag.

@@ -1,0 +1,13 @@
+name=Smearoo
+description=A little fingerpainting studio. Plop, smear, and mix six colors on your paper.
+cover=assets/cover.jpg
+coverart=assets/coverart.png
+icon=assets/icon.png
+favicon=favicon.png
+launch=index.html
+engine.api=1
+engine.entry=src/main.js
+engine.version=1.50.0
+engine.minor=50
+engine.limits.voices=20
+control.menu=Escape | Studio menu

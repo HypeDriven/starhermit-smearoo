@@ -1,0 +1,31 @@
+# viewport 390x844@3
+# touch-first
+# quality molecular
+# profile
+
+ready
+until 30 Pick a color, then tap or drag.
+touch 43 290
+measure start
+swipe 105 140 354 744 8
+swipe 340 180 113 702 8
+pinch 231 428 50 210 12
+touch 43 520
+swipe 348 289 118 545 7
+swipe 125 760 351 109 8
+touch 43 348
+swipe 109 744 348 140 8
+swipe 301 730 150 181 8
+pinch 231 428 210 50 12
+touch 43 462
+swipe 348 545 118 289 7
+swipe 124 109 350 760 8
+touch 43 408
+swipe 135 140 329 744 8
+swipe 310 180 143 702 8
+pinch 231 428 70 230 12
+touch 43 577
+swipe 318 289 148 545 7
+swipe 155 760 321 109 8
+measure stop
+save stress-paint

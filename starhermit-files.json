@@ -1,0 +1,26 @@
+{
+  "files": {
+    "LICENSE.md": {"sha256": "13324de5e020665146bea6eafc542805d5058daacbf163d89d9434f9367f33b8", "size": 4463},
+    "assets/cover.jpg": {"sha256": "ec314c93d57663d6c1d83176cd4df7bf0006a11ada594da1c0245ccb79ddb538", "size": 96180},
+    "assets/coverart.png": {"sha256": "78559020bffa94abdae5a9563b3eba717a1ec5cddb66f5d2e774c2298e81705c", "size": 717187},
+    "assets/cursor.rgba": {"sha256": "2574946ca148af327495fa8177f53833557f1c975ec65a6174dedf013c264cea", "size": 4096},
+    "assets/grain.png": {"sha256": "ab9e95e49d4ce4c08becca712e861ff0db57e83f678fe751b2a9998b9728bd46", "size": 37725},
+    "assets/icon.png": {"sha256": "83e3d7685dd13d2214808e27aee4c79994a879da24a36b83c9581b0747d6124e", "size": 2457},
+    "assets/music.ogg": {"sha256": "2f0ef3bbdffe0ad31e216a9bfa17c42604f678022223ff45d62e70f306cd0074", "size": 36527},
+    "assets/paint.wasm": {"sha256": "6e09730358844ce503fc93cf9bb1b07d03bc5f1e4554dba650a2153ed971e4b7", "size": 38926},
+    "favicon.png": {"sha256": "68f435b7746eb891b42903338910a0c43374f2d69a639fb9571ed6d6fa27bfa1", "size": 3554},
+    "index.html": {"sha256": "cf546edb1485c709fc242b63deeb90e395db8ec73b2f0ee2cd24a61c50e1fb4c", "size": 1773},
+    "sfx/dip.wav": {"sha256": "97ea765a62ee3f440d999653dea43086c7c6c7c716d399753d128e27a8969f61", "size": 17324},
+    "sfx/flick.wav": {"sha256": "3e165cd1286eed54fa30a1cb461c19cd4820c9e18fd6741c59d0851999da253d", "size": 20204},
+    "sfx/gallery.wav": {"sha256": "b7da584ac94b20df663c5b1673b5007f528e0bd822319e52ab43479dfec6ab40", "size": 72044},
+    "sfx/manifest.txt": {"sha256": "0fdff17570e94de6e9df7279dc46f4a1808d226475589cc0a321410a97b7b1c4", "size": 541},
+    "sfx/menu.wav": {"sha256": "f7c9aba8bdb1a08a728301d085f576659c0e08e767a023c36138ea357ab1130b", "size": 10604},
+    "sfx/paper.wav": {"sha256": "25c668a04868224e1c406e27bd9de82b17f0fb225268932590b6e846cc058f3a", "size": 29804},
+    "sfx/plop.wav": {"sha256": "c81d1f69b6841bc4c97935b61c5580087ee14a4169f70fd89fcef2765b6604f5", "size": 21164},
+    "sfx/smear.wav": {"sha256": "d8e0833989b4ea1e7a23c4a9ace97201fb213c9fb44d5ec0e259c203c2caeb8c", "size": 15404},
+    "src/main.js": {"sha256": "eb9cc27a5b6821526ba2a40f21ec4681a36893631d96e6062b61b1938ceb3203", "size": 17325},
+    "src/words.js": {"sha256": "120734578516b35eabfa7d4b445bea989e302612df8080ddecce7fa4ec838aea", "size": 7070},
+    "starhermit.txt": {"sha256": "83ae60ade4876f31df89e896bdb4167547d3ce5eac37b03a9ee1ea29875782e0", "size": 349}
+  },
+  "format": 1
+}
