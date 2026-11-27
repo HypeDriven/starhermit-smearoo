@@ -7,3 +7,5 @@ Smearoo is a free-form fingerpainting studio for toddlers. One screen contains a
 - The studio supports a mouse or up to ten independently painted touch strokes. Each finger keeps the color it starts with and can dip directly into a bucket before painting. Starting a fresh sheet asks for confirmation. The menu opens Starhermit options or quits the game.
 
 The engine handles input, rendering, audio, localization, and menus. Rust/WebAssembly handles the pigment simulation, paint lighting, and fixed-step gallery timing. The game runs locally as a guest.
+
+On engine 1.53.0, browser play through WebGL 2 compiles a frame's shader programs together and holds that frame until they are linked, blends skinned meshes in one pass, reuses the window pass's depth, and uses a hardware WebGL 2 context when WebGPU's adapter is software.

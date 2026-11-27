@@ -9,7 +9,7 @@
     "assets/music.ogg": {"sha256": "2f0ef3bbdffe0ad31e216a9bfa17c42604f678022223ff45d62e70f306cd0074", "size": 36527},
     "assets/paint.wasm": {"sha256": "6e09730358844ce503fc93cf9bb1b07d03bc5f1e4554dba650a2153ed971e4b7", "size": 38926},
     "favicon.png": {"sha256": "68f435b7746eb891b42903338910a0c43374f2d69a639fb9571ed6d6fa27bfa1", "size": 3554},
-    "index.html": {"sha256": "2222a821450e110b9008c6da155d25b9c76ed610289752c8357354fbbbaeb4f0", "size": 1773},
+    "index.html": {"sha256": "829733a3087cd2bf153efee7380f6b00e58ca295dfcc14505eb5ea1aa1b7bbe1", "size": 1773},
     "sfx/dip.wav": {"sha256": "97ea765a62ee3f440d999653dea43086c7c6c7c716d399753d128e27a8969f61", "size": 17324},
     "sfx/flick.wav": {"sha256": "3e165cd1286eed54fa30a1cb461c19cd4820c9e18fd6741c59d0851999da253d", "size": 20204},
     "sfx/gallery.wav": {"sha256": "b7da584ac94b20df663c5b1673b5007f528e0bd822319e52ab43479dfec6ab40", "size": 72044},
@@ -20,7 +20,8 @@
     "sfx/smear.wav": {"sha256": "d8e0833989b4ea1e7a23c4a9ace97201fb213c9fb44d5ec0e259c203c2caeb8c", "size": 15404},
     "src/main.js": {"sha256": "a878ba577a73a6029da14bb144bc8ce559f37c408d8edc840fbd47bc4c41921b", "size": 17791},
     "src/words.js": {"sha256": "dcfe13330976ae3449f69ae504d48b0f4f8feebbcd48bb583ac53e1c04768f35", "size": 5587},
-    "starhermit.txt": {"sha256": "5cabd5026709cd375dfa7da248957ecef366d2b161012bfae9314c30ba6bf58f", "size": 349}
+    "starhermit.txt": {"sha256": "38b8d81812ecf3cd30ff16e6c96b1492817a7ef1fcb62f20783d1b81d0089cda", "size": 372}
   },
+  "excluded": ["Cargo.lock", "Cargo.toml", "README.md", "publication.json", "spec.md", "src/paint.rs", "tools/"],
   "format": 1
 }
